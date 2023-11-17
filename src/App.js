@@ -3,10 +3,11 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 
 const authState = '12345';
-const jiraAppClientId = 'F7G5Yc4D3uwfTEZF5wZlUq0aUyp16Qrj';
-const jiraAppClientSecret = 'ATOAE1x81PC4hCSSXDOH87fLR2aM8etM74tb8R3Y2rHk-ItpE4DQ-CnKIwaydc7mXjeh5730E224';
+const jiraAppClientId = 'CLIENTID';
+const jiraAppClientSecret = 'SECRET';
 // Available here https://YOURTENANT.atlassian.net/_edge/tenant_info
-const cloudId = '';
+const cloudId = 'CLOUDID';
+const webhookListenerUrl = 'LISTENERURL';
 
 function App() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -25,7 +26,7 @@ function App() {
         client_id: jiraAppClientId,
         client_secret: jiraAppClientSecret,
         code: authCode,
-        redirect_uri: 'http://localhost:3000'
+        redirect_uri: webhookListenerUrl
       }, {
         headers: {
           'Content-Type': 'application/json'
@@ -51,7 +52,7 @@ function App() {
         jqlFilter: "project = SSP",
         events: ["jira:issue_deleted" ]
       }],
-      url: 'https://funny-safe-cheetah.ngrok-free.app'
+      url: webhookListenerUrl
     }, {
       headers: {
         'Authorization': 'Bearer ' + accessToken,
@@ -87,9 +88,7 @@ function App() {
   return (
     <div className="App">
       <h1>Testing Jira Webhooks</h1>
-      <a href={`https://auth.atlassian.com/authorize?audience=api.atlassian.com
-        &client_id=${jiraAppClientId}&scope=read%3Ajira-work%20write%3Ajira-work%20manage%3Ajira-configuration%20manage%3Ajira-webhook
-        &redirect_uri=http%3A%2F%2Flocalhost%3A3000&state=${authState}&response_type=code&prompt=consent`}>Auth</a>
+      <a href={`https://auth.atlassian.com/authorize?audience=api.atlassian.com&client_id=${jiraAppClientId}&scope=read%3Ajira-work%20write%3Ajira-work%20manage%3Ajira-configuration%20manage%3Ajira-webhook&redirect_uri=${encodeURI(webhookListenerUrl)}&state=${authState}&response_type=code&prompt=consent`}>Auth</a>
       {accessToken && (<>
         <button onClick={createWebhooks}>Create Webhooks</button>
         <button onClick={deleteWebhooks}>Delete Webhooks</button>
